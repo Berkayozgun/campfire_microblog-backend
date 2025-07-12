@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: campfire_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - campfire_network
+
+  api:
+    build: .
+    container_name: campfire_api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_CONNECTION_STRING=mongodb://admin:password@mongodb:27017/campfire_microblog?authSource=admin
+      - SECRET_KEY=your-secret-key-change-in-production
+      - FLASK_DEBUG=True
+    depends_on:
+      - mongodb
+    networks:
+      - campfire_network
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mongodb_data:
+
+networks:
+  campfire_network:
+    driver: bridge 

@@ -1,338 +1,206 @@
-# campfire-microblog
+# Campfire Microblog API
 
-Twitter-like micro blogging platform, where users can create, read, comment or vote posts.
+Twitter-like micro blogging platform backend API, built with Flask and MongoDB.
 
-## Description
+## 🚀 Features
 
-This project serves as a backend for campfire project. It is implemented using Flask, a lightweight web framework for Python.
+- **User Authentication**: JWT-based authentication system
+- **Post Management**: Create, read, update, delete posts
+- **Comment System**: Add comments to posts
+- **Voting System**: Upvote/downvote posts
+- **API Documentation**: Interactive Swagger UI documentation
+- **RESTful API**: Clean and organized REST endpoints
 
-## Getting Started
+## 📋 Prerequisites
 
-Follow the steps below to set up and run the Flask backend on your local machine.
+- Python 3.8+
+- MongoDB
+- pip
 
-### Installation
+## 🛠️ Installation
 
-1. Clone the project to your local machine.
-
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/Berkayozgun/campfire_microblog-microblog.git
-
+   git clone https://github.com/Berkayozgun/campfire_microblog-backend.git
+   cd campfire_microblog-backend
    ```
 
-2. Navigate to the project folder.
-
-   ```bash
-   cd campfire_microblog-microblog.git
-
-   ```
-
-3. Navigate to the latest upgraded branch
-
-   ```bash
-   git checkout feature/logout
-
-   ```
-
-4. Install the dependencies
-
+2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
-
    ```
 
-5. Start the backend of app
+3. **Set up environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   MONGODB_CONNECTION_STRING=mongodb://localhost:27017/campfire_microblog
+   SECRET_KEY=your-secret-key-change-in-production
+   FLASK_DEBUG=True
+   ```
+
+4. **Start MongoDB**
+   
+   Make sure MongoDB is running on your system.
+
+5. **Run the application**
    ```bash
    python main.py
    ```
 
-## Configuration
+The API will be available at `http://localhost:5000`
 
-Make sure you have a MongoDB instance running and update the MONGODB_CONNECTION_STRING and SECRET_KEY values in the config.py file.
+## 📚 API Documentation
 
-### API Usage
+### Interactive Documentation
 
-#### Registration
+Once the application is running, you can access the interactive API documentation at:
+- **Swagger UI**: `http://localhost:5000/docs/`
 
-##### Endpoint: `/register`
+### API Endpoints
 
-##### Method: `POST`
+#### Authentication
 
-###### Body:
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/auth/register` | Register a new user | No |
+| POST | `/auth/login` | Login user | No |
+| POST | `/auth/logout` | Logout user | Yes |
 
-```json
-{
-  "username": "testuser",
-  "email": "test@example.com",
-  "password": "123456",
-  "name": "John",
-  "surname": "Doe",
-  "birthdate": "1990-01-01",
-  "gender": "male",
-  "profile_image_url": "https://example.com/profile.jpg"
-}
+#### Users
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/users/profile` | Get authenticated user profile | Yes |
+| GET | `/users/users` | Get all users | No |
+
+#### Posts
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/posts/create` | Create a new post | Yes |
+| GET | `/posts/user_posts` | Get posts by authenticated user | Yes |
+| GET | `/posts/<post_id>` | Get a specific post | No |
+| DELETE | `/posts/<post_id>` | Delete a post | Yes |
+| GET | `/posts/all` | Get all posts | No |
+
+#### Comments
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/comments/<post_id>` | Add a comment to a post | Yes |
+
+#### Votes
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/votes/<post_id>` | Vote on a post | Yes |
+
+## 🔐 Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. To access protected endpoints:
+
+1. Register or login to get an access token
+2. Include the token in the Authorization header:
+   ```
+   Authorization: Bearer <your-jwt-token>
+   ```
+
+## 📝 Example Usage
+
+### Register a new user
+```bash
+curl -X POST http://localhost:5000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "123456",
+    "name": "John",
+    "surname": "Doe",
+    "birthdate": "1990-01-01",
+    "gender": "male",
+    "profile_image_url": "https://example.com/profile.jpg"
+  }'
 ```
 
-###### Response:
-
-```json
-{
-  "message": "Kayıt başarılı.",
-  "access_token": "jwt_token"
-}
+### Login
+```bash
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "testuser",
+    "password": "123456"
+  }'
 ```
 
-#### Login
-
-##### Endpoint: `/login`
-
-##### Method: `POST`
-
-###### Body:
-
-```json
-{
-  "username": "testuser",
-  "password": "123456"
-}
+### Create a post (with authentication)
+```bash
+curl -X POST http://localhost:5000/posts/create \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -d '{
+    "title": "My First Post",
+    "content": "This is my first post content"
+  }'
 ```
 
-###### Response:
-
-```json
-{
-  "message": "Giriş başarılı",
-  "access_token": "jwt_token",
-  "username": "testuser"
-}
+### Get all posts
+```bash
+curl -X GET http://localhost:5000/posts/all
 ```
 
-#### Get User Profile
-
-##### Endpoint: `/profile`
-
-##### Method: `GET`(Requires JWT token)
-
-###### Response:
-
-```json
-{
-  "username": "testuser",
-  "email": "test@example.com",
-  "name": "John",
-  "surname": "Doe"
-}
-```
-
-#### Create Post
-
-##### Endpoint: `/create_post`
-
-##### Method: `POST`(Requires JWT token)
-
-###### Body:
-
-```json
-{
-  "title": "First Post",
-  "content": "This is my first post"
-}
-```
-
-###### Response:
-
-```json
-{
-  "message": "Post başarıyla oluşturuldu.",
-  "post": {
-    "title": "First Post",
-    "content": "This is my first post"
-  }
-}
-```
-
-#### Get User Posts
-
-##### Endpoint: `/user_posts`
-
-##### Method: `GET`(Requires JWT token)
-
-###### Response:
-
-```json
-{
-  "posts": [
-    {
-      "title": "First Post",
-      "content": "This is my first post"
-    }
-  ]
-}
-```
-
-#### Get All Posts
-
-##### Endpoint: `/all_posts`
-
-##### Method: `GET`
-
-###### Response:
-
-```json
-{
-  "posts": [
-    {
-      "title": "First Post",
-      "content": "This is my first post"
-    }
-  ]
-}
-```
-
-#### Comment on Post
-
-##### Endpoint: `/add_comment/<post_id>`
-
-##### Method: `POST`(Requires JWT token)
-
-###### Body:
-
-```json
-{
-  "content": "This is a comment"
-}
-```
-
-###### Response:
-
-```json
-{
-  "message": "Yorum başarıyla eklendi.",
-  "post": {
-    "title": "First Post",
-    "comments": [
-      {
-        "user": "testuser",
-        "comment": "Great post!"
-      }
-    ]
-  }
-}
-```
-
-#### Vote on a Post
-
-##### Endpoint: `/vote/<post_id>`
-
-##### Method: `POST`(Requires JWT token)
-
-###### Body:
-
-```json
-{
-  "vote_type": "upvote"
-}
-```
-
-###### Response:
-
-```json
-{
-  "message": "Oy başarıyla eklendi.",
-  "post": {
-    "title": "First Post",
-    "votes": [
-      {
-        "user": "testuser",
-        "vote_type": "upvote"
-      }
-    ]
-  }
-}
-```
-
-## Get Post by ID
-
-##### Endpoint: `/posts/<post_id>`
-
-##### Method: `GET`
-
-###### Response:
-
-```json
-{
-  "post": {
-    "title": "First Post",
-    "content": "This is my first post"
-  }
-}
-```
-
-## Delete Post
-
-##### Endpoint: `/post/<post_id>`
-
-##### Method: `DELETE`(Requires JWT token)
-
-###### Response:
-
-```json
-{
-  "message": "Post successfully deleted."
-}
-```
-
-## Logout
-
-##### Endpoint: `/logout`
-
-##### Method: `POST`(Requires JWT token)
-
-###### Response:
-
-```json
-{
-  "message": "Logout successful."
-}
-```
-
-# Models
-
-## UserModel
+## 🏗️ Project Structure
 
 ```
-- username (String) : Unique username of the user.
-- email (String) : Unique email address of the user.
-- name (String) : Name of the user.
-- surname (String) : Surname of the user.
-- birthdate (String) : Birthdate of the user.
-- gender (String) : Users's gender
-- profile_image (String) : URL of the user's profile image.
+campfire_microblog-backend/
+├── main.py              # Main application file
+├── config.py            # Configuration settings
+├── requirements.txt     # Python dependencies
+├── models/
+│   └── models.py       # Database models
+├── instance/           # Database files
+└── README.md          # This file
 ```
 
-## PostModel
+## 🛡️ Security Features
 
-```
-- author (Reference) : Reference to the user who created the post.
-- date (DateTime) : Date and time of the post creation.
-- title (String) : Title of the post.
-- content (String) : Content of the post.
-- comments (List) : List of comments on the post.
-- votes (List) : List of votes on the post.
-```
+- **Password Hashing**: Passwords are hashed using bcrypt
+- **JWT Authentication**: Secure token-based authentication
+- **CORS Support**: Cross-origin resource sharing enabled
+- **Input Validation**: Request data validation
+- **Error Handling**: Comprehensive error responses
 
-## CommentModel
+## 🔧 Configuration
 
-```
-- user (Reference) : Reference to the user who created the comment.
-- content (String) : Content of the comment.
-- date (DateTime) : Date and time of the comment creation.
-```
+The application can be configured through environment variables:
 
-## VoteModel
+- `MONGODB_CONNECTION_STRING`: MongoDB connection string
+- `SECRET_KEY`: JWT secret key (change in production)
+- `FLASK_DEBUG`: Enable/disable debug mode
 
-```
-- user (Reference) : Reference to the user who voted.
-- vote_type (String) : Type of the vote (upvote or downvote).
-- post (Reference) : Reference to the post that was voted on.
-- date (DateTime) : Date and time of the vote.
-```
+## 🚀 Deployment
+
+For production deployment:
+
+1. Set `FLASK_DEBUG=False`
+2. Use a strong `SECRET_KEY`
+3. Configure MongoDB with proper authentication
+4. Use a production WSGI server (e.g., Gunicorn)
+5. Set up proper CORS configuration
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+If you encounter any issues or have questions, please open an issue on GitHub.
