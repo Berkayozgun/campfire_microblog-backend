@@ -1,41 +1,66 @@
-# 🔥 Campfire Backend API
+# 🔥 Campfire Microblog Backend
 
-A scalable micro-blogging platform backend built with **Flask**, **MongoDB**, and **Clean Architecture** principles. Designed to handle social interactions like posting, commenting, and voting with high performance.
+A RESTful API built with **Flask**, **MongoDB**, and **Docker**. Designed to handle social interactions like posting, commenting, and voting with high performance and scalability.
 
-![Python](https://img.shields.io/badge/Python-3.9-blue) ![Flask](https://img.shields.io/badge/Flask-RESTx-black) ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green) ![License](https://img.shields.io/badge/License-MIT-yellow)
-
----
-
-### ⚡ Key Technical Highlights
-
-#### 1. Database Modeling (Reference Strategy)
-Instead of embedding all data into a single document, this project uses a **Reference-Based Architecture** with `MongoEngine`.
-- **Why?** To bypass MongoDB's 16MB document limit and ensure scalability for posts with thousands of comments.
-- **Implementation:** `PostModel` stores references (`ListField(ReferenceField)`) to independent Comment documents.
-
-#### 2. Advanced Voting Logic
-Implemented a smart voting mechanism that handles `upvote`, `downvote`, and `un-vote` actions atomically.
-- Checks `existing_vote` to prevent duplicate actions.
-- Updates references in real-time without locking the entire collection.
-
-#### 3. Secure Authentication
-- **JWT Implementation:** Uses `Flask-JWT-Extended` for stateless authentication.
-- **Automatic User Loading:** Leveraging `@jwt.user_lookup_loader` to inject the `current_user` object into protected endpoints automatically, keeping controllers clean.
-
-#### 4. Modular API Design
-- Built with `flask-restx` namespaces (`/auth`, `/posts`, `/comments`).
-- **Auto-Documentation:** Fully integrated Swagger UI available at `/docs`.
+![Python](https://img.shields.io/badge/Python-3.9-blue?style=for-the-badge&logo=python&logoColor=white) 
+![Flask](https://img.shields.io/badge/Flask-RESTx-black?style=for-the-badge&logo=flask&logoColor=white) 
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white) 
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white) 
+![Swagger](https://img.shields.io/badge/Swagger-API_Docs-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
 ---
 
-### 🛠 Installation & Setup
+### 🌟 Features
 
+- **🔐 JWT Authentication:** Secure, stateless authentication using `Flask-JWT-Extended`.
+- **📝 Posts:** Create, read, and delete micro-blogging posts.
+- **💬 Comments:** Reference-based architecture to handle thousands of comments per post.
+- **🗳️ Voting:** Atomic upvote/downvote mechanism with real-time updates.
+- **🐳 Containerized:** Ready for deployment with Docker and Docker Compose.
+- **📖 Auto-Docs:** Interactive Swagger UI for easy API testing.
+
+---
+
+### 🚀 Quick Start (Docker)
+
+This is the preferred method to run the application in a consistent environment.
+
+#### Step 1: Clone the repository
 ```bash
-# Clone the repository
-git clone [https://github.com/Berkayozgun/campfire_microblog-backend.git](https://github.com/Berkayozgun/campfire_microblog-backend.git)
+git clone https://github.com/Berkayozgun/campfire_microblog-backend.git
+cd campfire_microblog-backend
+```
 
-# Install dependencies
-pip install -r requirements.txt
+#### Step 2: Create Environment Variables
+Create a `.env` file in the root directory:
+```env
+MONGODB_CONNECTION_STRING=your_mongodb_connection_string
+SECRET_KEY=your_secured_secret_key
+FLASK_DEBUG=True
+```
 
-# Run the application
-python main.py
+#### Step 3: Launch with Docker Compose
+```bash
+sudo docker compose up --build
+```
+
+The API will be available at: `http://localhost:5000`
+
+---
+
+### 📖 API Documentation
+
+The project includes built-in Swagger documentation powered by **Flask-RESTx**. You can explore and test the endpoints interactively:
+
+🔗 **Interactive Docs:** [http://localhost:5000/docs](http://localhost:5000/docs)
+
+---
+
+### 🛠 Tech Stack
+
+- **Core Framework:** [Flask](https://flask.palletsprojects.com/)
+- **API Engine:** [Flask-RESTx](https://flask-restx.readthedocs.io/)
+- **Database (ODM):** [MongoEngine](http://mongoengine.org/)
+- **Auth:** [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/)
+- **Security:** [Flask-Bcrypt](https://flask-bcrypt.readthedocs.io/)
+- **Deployment:** [Docker](https://www.docker.com/) & [Gunicorn](https://gunicorn.org/)
